@@ -1,0 +1,23 @@
+#!/usr/bin/python3
+
+import os
+import sys
+from lxml import etree
+
+
+def main(filename):
+    with open(filename) as f:
+        et = etree.parse(f)
+
+    root = et.getroot()
+    for el in root.findall('.//{%s}extensions' % root.nsmap[None]):
+        el.getparent().remove(el)
+
+    _filename = '%s~' % filename
+    with open(_filename, 'wb') as f:
+        f.write(etree.tostring(et, encoding='UTF-8', xml_declaration=True))
+    os.rename(_filename, filename)
+
+if __name__ == '__main__':
+    for arg in sys.argv[1:]:
+        main(arg)
